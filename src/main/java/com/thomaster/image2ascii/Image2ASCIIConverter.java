@@ -32,6 +32,7 @@ public class Image2ASCIIConverter {
         return this;
     }
 
+    
     public Image2ASCIIConverter setAsciiConverter(ASCIIConverter asciiConverter) {
         this.asciiConverter = asciiConverter;
         return this;
