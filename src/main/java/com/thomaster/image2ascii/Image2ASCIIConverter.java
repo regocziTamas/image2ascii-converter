@@ -14,17 +14,18 @@ import java.io.IOException;
 
 public class Image2ASCIIConverter {
 
-    private char[] customCharaterSet;
+    private char[] customCharacterSet;
     private int customNumOfGrayShades = 0;
     private ASCIIConverter asciiConverter;
     private GrayscaleMethod grayscaleMethod;
-    private int xMergeFactor = 0;
-    private int yMergeFactor = 0;
+    private int horizontalMergeFactor = 0;
+    private int verticalMergeFactor = 0;
 
-    public Image2ASCIIConverter useCustomCharaterSetWithDefaultConverter(char[] customCharaterSet) {
-        this.customCharaterSet = customCharaterSet;
+    public Image2ASCIIConverter useCustomCharaterSetWithDefaultConverter(char[] customCharacterSet) {
+        this.customCharacterSet = customCharacterSet;
         return this;
     }
+
 
     public Image2ASCIIConverter useCustomNumOfGrayShadesWithDefaultGrayscaler(int customNumOfGrayShades) {
         this.customNumOfGrayShades = customNumOfGrayShades;
@@ -36,20 +37,24 @@ public class Image2ASCIIConverter {
         return this;
     }
 
+
     public Image2ASCIIConverter setGrayscaleMethod(GrayscaleMethod grayscaleMethod) {
         this.grayscaleMethod = grayscaleMethod;
         return this;
     }
 
-    public Image2ASCIIConverter setHorizontalMergeFactor(int xMergeFactor) {
-        this.xMergeFactor = xMergeFactor;
+
+    public Image2ASCIIConverter setHorizontalMergeFactor(int horizontalMergeFactor) {
+        this.horizontalMergeFactor = horizontalMergeFactor;
         return this;
     }
 
-    public Image2ASCIIConverter setVerticalMergeFactor(int yMergeFactor) {
-        this.yMergeFactor = yMergeFactor;
+
+    public Image2ASCIIConverter setVerticalMergeFactor(int verticalMergeFactor) {
+        this.verticalMergeFactor = verticalMergeFactor;
         return this;
     }
+
 
     public char[][] convert(File imageFileToExport) throws IOException {
         Color[][] imageAsArray = new Image2PixelArray(imageFileToExport).convert();
@@ -61,8 +66,12 @@ public class Image2ASCIIConverter {
         if (!isGrayscaleImage(grayscaledImage))
             throw new RuntimeException("Image grayscale did not succeed, image is not grayscale.");
 
+        if (!areMergeFactorsValid())
+            throw new RuntimeException("Both merge factors have to be greater than or equal to 1.");
+
         return getAsciiConverterOrCreateDefault().convert(grayscaledImage);
     }
+
 
     private GrayscaleMethod getGrayscaleMethodOrCreateDefault() {
         if (grayscaleMethod != null)
@@ -71,20 +80,29 @@ public class Image2ASCIIConverter {
         return new GrayscaleCustomNumShades(customNumOfGrayShades != 0 ? customNumOfGrayShades : 32);
     }
 
+
     private ASCIIConverter getAsciiConverterOrCreateDefault() {
         if(asciiConverter != null)
             return asciiConverter;
 
-        return new DefaultASCIIConverter(customCharaterSet != null ? customCharaterSet : new char[]{'W', 'M','@','N', '+', ',', '.', ' '});
+        return new DefaultASCIIConverter(customCharacterSet != null ? customCharacterSet : new char[]{'W', 'M','@','N', '+', ',', '.', ' '});
     }
+
 
     private int getHorizontalMergeFactor() {
-        return xMergeFactor != 0 ? xMergeFactor : 2;
+        return horizontalMergeFactor != 0 ? horizontalMergeFactor : 2;
     }
 
+
     private int getVerticalMergeFactor() {
-        return yMergeFactor != 0 ? yMergeFactor : 4;
+        return verticalMergeFactor != 0 ? verticalMergeFactor : 4;
     }
+
+
+    private boolean areMergeFactorsValid() {
+        return horizontalMergeFactor > 0 && verticalMergeFactor > 0;
+    }
+
 
     private boolean isGrayscaleImage(Color[][] array) {
 

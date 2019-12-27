@@ -4,22 +4,22 @@ import java.awt.*;
 
 public class ImagePixelMerger {
 
-    private int xFactor;
-    private int yFactor;
+    private int horizontalMergeFactor;
+    private int verticalMergeFactor;
     private Color[][] originalImage;
     private Color[][] newImage;
 
-    public ImagePixelMerger(int xFactor, int yFactor, Color[][] originalImage) {
-        this.xFactor = xFactor;
-        this.yFactor = yFactor;
+    public ImagePixelMerger(int horizontalMergeFactor, int verticalMergeFactor, Color[][] originalImage) {
+        this.horizontalMergeFactor = horizontalMergeFactor;
+        this.verticalMergeFactor = verticalMergeFactor;
         this.originalImage = originalImage;
         this.newImage = createNewEmptyImage(originalImage);
     }
 
 
     private Color[][] createNewEmptyImage(Color[][] originalImage) {
-        double width = originalImage[0].length / (double) xFactor;
-        double height = originalImage.length / (double) yFactor;
+        double width = originalImage[0].length / (double) horizontalMergeFactor;
+        double height = originalImage.length / (double) verticalMergeFactor;
 
         double newHeight = Math.ceil(height);
         double newWidth = Math.ceil(width);
@@ -32,8 +32,8 @@ public class ImagePixelMerger {
         int newImageX = 0;
         int newImageY = 0;
 
-        for (int i = 0; i < originalImage.length; i+=yFactor) {
-            for (int k = 0; k < originalImage[0].length; k+=xFactor) {
+        for (int i = 0; i < originalImage.length; i+= verticalMergeFactor) {
+            for (int k = 0; k < originalImage[0].length; k+= horizontalMergeFactor) {
 
                 Color newColor = fillNByNPixelsWithAvgColor(i, k);
                 newImage[newImageY][newImageX] = newColor;
@@ -52,8 +52,8 @@ public class ImagePixelMerger {
         int b = 0;
         int avgFactor = 0;
 
-        for (int i = 0; i < yFactor; i++) {
-            for (int k = 0; k < xFactor; k++) {
+        for (int i = 0; i < verticalMergeFactor; i++) {
+            for (int k = 0; k < horizontalMergeFactor; k++) {
                 if(startI + i < originalImage.length && startK + k < originalImage[0].length) {
 
                     Color color = originalImage[startI + i][startK + k];
@@ -63,7 +63,6 @@ public class ImagePixelMerger {
                     avgFactor++;
                 }
             }
-
         }
 
         return new Color(r / avgFactor, g / avgFactor, b / avgFactor);
